@@ -20,9 +20,6 @@
     "agentic"
   ],
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/FranEscob/obsidian-plugin"
-  },
-  "homepage": "https://github.com/FranEscob/obsidian-plugin#readme"
+  "repository": "https://github.com/FrancoEscob/obsidian-plugin-marketplace",
+  "homepage": "https://github.com/FrancoEscob/obsidian-plugin-marketplace#readme"
 }
