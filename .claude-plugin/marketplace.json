@@ -1,6 +1,6 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "Obsidian Adaptive Plugin Marketplace",
+  "name": "obsidian-adaptive-plugin-marketplace",
   "description": "Marketplace for the Obsidian Adaptive Plugin - A configurable framework for creating personalized Obsidian vaults with Claude Code. Features adaptive commands, ADHD-friendly workflows, and dynamic configuration system.",
   "owner": {
     "name": "Franco Escobar",
