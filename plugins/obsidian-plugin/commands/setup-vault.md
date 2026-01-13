@@ -21,7 +21,50 @@ Wizard interactivo que configura tu Obsidian vault desde cero, adaptándose a tu
 
 ## Instrucciones
 
-### PASO 0: Validación
+### PASO 0: Selección de Idioma
+
+**PRIMER MENSAJE DEL WIZARD:**
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    👋 WELCOME / BIENVENIDO / BIENVENUE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Let's start by choosing your language.
+Comencemos eligiendo tu idioma.
+
+Choose your language / Elige tu idioma:
+
+1. 🇪🇸 Español
+2. 🇬🇧 English  
+3. 🌍 Other (specify / especificar)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+Usar AskUserQuestion:
+```
+Your choice / Tu elección (1/2/3):
+```
+
+**Si elige 1:** 
+- Guardar `$LANGUAGE = "español"` 
+- **TODO el wizard se ejecuta en español**
+
+**Si elige 2:** 
+- Guardar `$LANGUAGE = "english"`
+- **TODO el wizard se ejecuta en inglés**
+
+**Si elige 3:** 
+- Preguntar: `Please specify your language / Especifica tu idioma:`
+- Guardar respuesta en `$LANGUAGE`
+- Intentar responder en ese idioma, si no es posible usar inglés
+
+**IMPORTANTE:** A partir de aquí, todos los mensajes deben adaptarse al idioma elegido.
+
+---
+
+### PASO 1: Validación
 
 1. Verifica que el vault esté vacío o casi vacío:
 ```bash
@@ -30,23 +73,46 @@ find . -maxdepth 2 -name "*.md" -type f | wc -l
 ```
 
 2. Si hay más de 5 archivos .md, preguntar:
-   ```
-   Este vault parece tener contenido existente.
-   /setup-vault está diseñado para vaults nuevos.
-   
-   ¿Continuar de todas formas? (s/n)
-   ```
+
+[Español:]
+```
+Este vault parece tener contenido existente.
+/setup-vault está diseñado para vaults nuevos.
+
+¿Continuar de todas formas? (s/n)
+```
+
+[English:]
+```
+This vault seems to have existing content.
+/setup-vault is designed for new vaults.
+
+Continue anyway? (y/n)
+```
 
 3. Si hay `.claude/vault-config.yml` existente:
-   ```
-   Ya existe una configuración en .claude/vault-config.yml
-   
-   Opciones:
-   1. Reconfigurar (sobrescribe config actual)
-   2. Cancelar y mantener config actual
-   
-   ¿Qué hacer? (1/2)
-   ```
+
+[Español:]
+```
+Ya existe una configuración en .claude/vault-config.yml
+
+Opciones:
+1. Reconfigurar (sobrescribe config actual)
+2. Cancelar y mantener config actual
+
+¿Qué hacer? (1/2)
+```
+
+[English:]
+```
+Configuration already exists in .claude/vault-config.yml
+
+Options:
+1. Reconfigure (overwrites current config)
+2. Cancel and keep current config
+
+What to do? (1/2)
+```
 
 ---
 
@@ -54,8 +120,9 @@ find . -maxdepth 2 -name "*.md" -type f | wc -l
 ## FASE 1: Bienvenida + Contexto
 ## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Mostrar:
+Mostrar bienvenida **EN EL IDIOMA ELEGIDO**:
 
+[Si $LANGUAGE = "español":]
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    🌟 Bienvenido al Setup de tu Obsidian Vault + Claude
@@ -69,6 +136,7 @@ Este wizard va a:
 4. Adaptar comandos y automatizaciones a tu estilo
 5. Generar la estructura de carpetas
 
+Idioma: Español 🇪🇸
 ⏱️  Tiempo estimado: 5-7 minutos (8 pasos)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -78,7 +146,35 @@ Primero, déjame explicarte cómo funciona esto...
 
 Usar AskUserQuestion: "¿Listo para empezar? (s/n)"
 
-Si responde "n", terminar con: "Cuando estés listo, ejecuta /setup-vault nuevamente."
+[Si $LANGUAGE = "english":]
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   🌟 Welcome to Your Obsidian Vault + Claude Setup
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+This wizard will:
+
+1. Explain how a PKM (Personal Knowledge Management) system works
+2. Understand how YOU work
+3. Create a personalized configuration
+4. Adapt commands and automations to your style
+5. Generate the folder structure
+
+Language: English 🇬🇧
+⏱️  Estimated time: 5-7 minutes (8 steps)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+First, let me explain how this works...
+```
+
+Usar AskUserQuestion: "Ready to start? (y/n)"
+
+---
+
+**IMPORTANTE:** De aquí en adelante, el wizard debe usar el idioma elegido para TODOS los mensajes.
+
+Si responde "n", terminar con mensaje en su idioma.
 
 ---
 
@@ -791,6 +887,7 @@ automation_level: "[minimal/medium/high según elección]"
 preferences:
   verbosity: "[casual si ADHD, technical si francovault, balanced default]"
   confirmation_prompts: [true si auto_classify=false, false si true]
+  language: "$LANGUAGE"
 ```
 
 Usar Write para crear `.claude/vault-config.yml`
