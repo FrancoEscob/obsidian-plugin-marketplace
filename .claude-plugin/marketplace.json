@@ -1,0 +1,38 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "Obsidian Adaptive Plugin Marketplace",
+  "description": "Marketplace for the Obsidian Adaptive Plugin - A configurable framework for creating personalized Obsidian vaults with Claude Code. Features adaptive commands, ADHD-friendly workflows, and dynamic configuration system.",
+  "owner": {
+    "name": "Franco Escobar",
+    "email": "francoescobarvrx@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "obsidian-plugin",
+      "description": "Framework adaptativo para crear vaults personalizados de Obsidian con Claude Code. Incluye wizard interactivo de 8 fases, 7 comandos adaptativos, 4 configuraciones base (francovault, minimal, researcher, creative-adhd), hooks dinámicos y sistema de templates. Diseñado para usuarios técnicos, creativos, investigadores y personas con ADHD.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Franco Escobar",
+        "email": "francoescobarvrx@gmail.com"
+      },
+      "source": "./plugins/obsidian-plugin",
+      "category": "productivity",
+      "keywords": [
+        "obsidian",
+        "vault",
+        "pkm",
+        "knowledge-management",
+        "productivity",
+        "notes",
+        "second-brain",
+        "adhd",
+        "adaptive",
+        "configurable",
+        "personal-assistant",
+        "wizard",
+        "automation",
+        "workflows"
+      ]
+    }
+  ]
+}

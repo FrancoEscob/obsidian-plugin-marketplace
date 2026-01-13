@@ -1,0 +1,28 @@
+{
+  "name": "obsidian-plugin",
+  "version": "1.0.0",
+  "description": "Configurable framework for creating personalized Obsidian vaults with interactive setup wizard. Transform any Obsidian vault into an agentic personal knowledge management system with customizable workflows, commands, and automation.",
+  "author": {
+    "name": "Franco Escobar",
+    "email": "francoescobarvrx@gmail.com"
+  },
+  "keywords": [
+    "obsidian",
+    "vault",
+    "pkm",
+    "knowledge-management",
+    "productivity",
+    "notes",
+    "framework",
+    "configurable",
+    "wizard",
+    "second-brain",
+    "agentic"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FranEscob/obsidian-plugin"
+  },
+  "homepage": "https://github.com/FranEscob/obsidian-plugin#readme"
+}

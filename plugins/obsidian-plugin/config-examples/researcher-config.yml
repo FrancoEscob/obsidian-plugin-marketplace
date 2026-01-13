@@ -1,0 +1,257 @@
+# Researcher Configuration
+# Academic and research-focused setup
+# Optimized for literature review, research projects, and academic writing
+
+vault_name: "ResearchVault"
+
+owner:
+  name: "Your Name"
+  role: "PhD Candidate / Researcher"
+
+# ============================================================================
+# FOLDER STRUCTURE
+# ============================================================================
+
+folders:
+  # Core folders
+  inbox: "INBOX"
+  knowledge: "KNOWLEDGE"
+  projects: "RESEARCH"  # Using "RESEARCH" instead of "PROJECTS"
+  templates: "Templates"
+
+  # Research-specific folders
+  resources: "RESOURCES"
+  productivity: "PRODUCTIVITY"
+  daily_notes: "PRODUCTIVITY/Lab-Notes"
+  ideas: "IDEAS"
+  canvas: "DIAGRAMS"
+  memories: "AGENT-MEMORIES"
+
+  # Additional research folders
+  literature: "RESOURCES/Literature"
+  papers: "RESOURCES/Papers"
+  datasets: "RESOURCES/Datasets"
+  courses: "KNOWLEDGE/Courses"
+
+# ============================================================================
+# CATEGORIES / RESEARCH AREAS
+# ============================================================================
+
+# Organize by research area, field, or topic
+categories:
+  - name: "Primary-Research"
+    folder: "KNOWLEDGE/Primary-Research"
+    description: "Main research area and topics"
+
+  - name: "Related-Fields"
+    folder: "KNOWLEDGE/Related-Fields"
+    description: "Adjacent research areas"
+
+  - name: "Methodology"
+    folder: "KNOWLEDGE/Methodology"
+    description: "Research methods and techniques"
+
+  - name: "Theory"
+    folder: "KNOWLEDGE/Theory"
+    description: "Theoretical frameworks"
+
+  - name: "Applications"
+    folder: "KNOWLEDGE/Applications"
+    description: "Practical applications and case studies"
+
+# ============================================================================
+# FRONTMATTER SCHEMA
+# ============================================================================
+
+frontmatter_schema:
+  required_fields:
+    - id
+    - created
+    - modified
+    - type
+    - status
+
+  optional_fields:
+    - research_area
+    - related_papers
+    - projects
+    - tags
+    - has_todos
+    - citation_key  # BibTeX key
+    - authors
+    - year
+
+  tipo_values:
+    - paper_note  # Notes on academic papers
+    - concept  # Theoretical concepts
+    - methodology  # Research methods
+    - experiment  # Experiment notes
+    - literature_review  # Literature reviews
+    - research_project  # Research projects
+    - idea  # Research ideas
+    - lab_note  # Daily lab/research notes
+    - course  # Course notes
+    - presentation  # Presentations
+
+  estado_values:
+    - active
+    - archived
+    - draft
+    - under_review
+    - published
+    - completed
+
+# ============================================================================
+# TEMPLATES
+# ============================================================================
+
+templates:
+  set: "researcher"  # Will use custom researcher templates
+  use_emojis: true
+  date_format: "YYYY-MM-DD"
+
+  files:
+    daily_note: "lab-note.md"
+    quick_note: "quick-note.md"
+    paper_note: "paper-note.md"
+    concept_note: "concept-note.md"
+    experiment_note: "experiment-note.md"
+    project_readme: "research-project.md"
+
+# ============================================================================
+# WORKFLOW PREFERENCES
+# ============================================================================
+
+workflows:
+  inbox:
+    auto_classify: false
+    move_files: true
+    create_backlinks: true  # Important for research connections
+
+  daily_notes:
+    auto_open: false
+    include_todos: true
+    include_previous_day_link: true  # Track research progress
+
+  linking:
+    auto_link: false
+    min_similarity: 0.6  # Lower threshold for more connections
+    scan_all: true  # Scan entire vault for connections
+
+  projects:
+    create_brief: true  # Research proposal
+    create_readme: true
+    initialize_git: true  # Version control for research
+
+# ============================================================================
+# HOOKS CONFIGURATION
+# ============================================================================
+
+hooks:
+  session_summary:
+    enabled: true
+    show_inbox_count: true
+    show_daily_note_status: true
+    show_overdue_todos: true
+
+  frontmatter_helper:
+    enabled: true
+    auto_suggest: true
+    required_only: false  # Suggest all research metadata
+
+  link_suggester:
+    enabled: true
+    trigger_folders:
+      - "KNOWLEDGE"
+      - "RESEARCH"
+      - "RESOURCES/Papers"
+      - "RESOURCES/Literature"
+    min_suggestions: 3  # More suggestions for research
+
+# ============================================================================
+# ADVANCED SETTINGS
+# ============================================================================
+
+advanced:
+  naming:
+    case: "kebab-case"
+    date_prefix: true  # Date prefix for lab notes
+
+  search:
+    exclude_folders:
+      - ".obsidian"
+      - ".trash"
+      - "ARCHIVE"
+
+  validation:
+    strict_frontmatter: true  # Important for research organization
+    warn_missing_fields: true
+
+  performance:
+    cache_enabled: true  # Enable for large literature databases
+    batch_size: 100
+
+# ============================================================================
+# INTEGRATIONS
+# ============================================================================
+
+integrations:
+  git:
+    auto_commit: true  # Auto-commit research notes
+    commit_message_template: "Research update: {{date}}"
+
+  obsidian:
+    vault_path: ""  # Set your vault path
+
+  external:
+    spaced_repetition: true
+    zotero: true  # Reference manager integration
+    citation_plugin: true  # Pandoc/Citations
+
+# ============================================================================
+# RESEARCH-SPECIFIC SETTINGS
+# ============================================================================
+
+# Additional settings for research workflows
+research:
+  # Paper management
+  papers:
+    auto_extract_metadata: true  # Extract from PDF metadata
+    default_folder: "RESOURCES/Papers"
+    naming_convention: "{{author}}-{{year}}-{{title}}"
+
+  # Literature review
+  literature_review:
+    connection_threshold: 0.7  # Similarity for suggesting connections
+    auto_categorize: false
+
+  # Citation management
+  citations:
+    style: "APA"  # Citation style
+    bibliography_folder: "RESOURCES/Bibliography"
+
+# ============================================================================
+# NOTES
+# ============================================================================
+
+# This researcher configuration is optimized for:
+# - Academic research workflows
+# - Literature review and paper management
+# - Research project organization
+# - Experiment tracking and lab notes
+# - Knowledge synthesis and concept mapping
+
+# Key features:
+# - Research-area based organization
+# - Paper-focused metadata (authors, year, citation key)
+# - Enhanced linking for literature connections
+# - Git integration for version control
+# - Extended frontmatter for academic metadata
+# - Date-prefixed lab notes for chronological tracking
+
+# Recommended plugins to install in Obsidian:
+# - Citations (Pandoc/BibTeX integration)
+# - Zotero Integration
+# - Dataview (for querying research notes)
+# - Graph Analysis (for literature networks)
+# - Spaced Repetition (for memorizing concepts)

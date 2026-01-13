@@ -1,0 +1,71 @@
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.edtz
+
+# Node modules (if any)
+node_modules/
+package-lock.json
+
+# Python (if any)
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+*.so
+.pytest_cache/
+.coverage
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Build artifacts
+dist/
+build/
+*.min.js
+*.min.css
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Personal/Private
+private/
+test-vaults/
+*.private.md
+
+# Obsidian specific
+.obsidian/
+.trash/
+
+# Claude Code specific
+.claude/vault-config.yml
+.claude/hooks/
+_CONTEXT/
+
+# Backup files
+*.backup
+*.bak
+*~
+
+# Archives
+*.zip
+*.tar.gz
+*.rar

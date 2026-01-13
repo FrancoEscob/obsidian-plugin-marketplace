@@ -1,0 +1,358 @@
+# Creative ADHD Configuration
+# Optimized for creative, non-technical users with ADHD
+# Focus: Zero friction, automatic context preservation, visual guidance
+
+vault_name: "CreativeVault"
+
+owner:
+  name: "Your Name"
+  role: "Creative / Idea Architect"
+
+# ============================================================================
+# FOLDER STRUCTURE (ULTRA SIMPLE)
+# ============================================================================
+
+folders:
+  # Core folders (only essentials)
+  inbox: "INBOX"
+  ideas: "IDEAS"
+  projects: "PROJECTS"
+  templates: "Templates"
+
+  # Context preservation (THE KEY FOR ADHD)
+  context: "_CONTEXT"  # Where all session memories live
+  sessions: "_CONTEXT/sessions"  # One file per session
+  project_memory: "_CONTEXT/projects"  # Memory per project
+
+  # Visual dashboard
+  dashboard: "DASHBOARD"  # Canvas files for visual overview
+
+  # Optional (can be added later)
+  resources: "RESOURCES"  # External resources
+  learning: "LEARNING"  # Learning materials
+
+# ============================================================================
+# CATEGORIES (MAX 3-4, KEEP IT SIMPLE)
+# ============================================================================
+
+categories:
+  - name: "Apps"
+    folder: "PROJECTS/Apps"
+    description: "App projects (health, languages, etc.)"
+
+  - name: "Ideas"
+    folder: "IDEAS"
+    description: "Raw ideas and brainstorming"
+
+  - name: "Learning"
+    folder: "LEARNING"
+    description: "Things I'm learning"
+
+# ============================================================================
+# FRONTMATTER SCHEMA (SIMPLIFIED)
+# ============================================================================
+
+frontmatter_schema:
+  # Minimal required fields (less cognitive load)
+  required_fields:
+    - id
+    - created
+    - type
+    - status
+
+  # Keep optional fields minimal
+  optional_fields:
+    - category
+    - project
+    - tags
+    - energy_level  # New: track energy when creating note
+    - mood  # New: context for ADHD users
+
+  tipo_values:
+    - note
+    - project
+    - idea
+    - session  # New: session summaries
+    - task
+    - resource
+
+  estado_values:
+    - active
+    - paused  # New: for when you need to pause
+    - waiting  # New: waiting for something external
+    - completed
+    - archived
+
+# ============================================================================
+# TEMPLATES (ADHD-OPTIMIZED)
+# ============================================================================
+
+templates:
+  set: "creative-adhd"  # Uses special ADHD-friendly templates
+  use_emojis: true  # Visual cues help ADHD brains
+  date_format: "YYYY-MM-DD"
+
+  # Visual indicators for energy/complexity
+  energy_indicators: true  # 🔋 High energy, 🪫 Low energy
+
+  files:
+    daily_note: "daily-note.md"
+    quick_note: "quick-capture.md"  # FAST capture (for racing thoughts)
+    project: "project.md"
+    session_summary: "session.md"  # Auto-generated session summaries
+    idea: "idea.md"
+
+# ============================================================================
+# WORKFLOWS (MAXIMUM AUTOMATION FOR ZERO FRICTION)
+# ============================================================================
+
+workflows:
+  # /process-inbox - FULL AUTO MODE
+  inbox:
+    auto_classify: true  # Don't ask, just classify
+    move_files: true
+    create_backlinks: true
+    batch_mode: true  # Process all at once, no interruptions
+
+  # Daily notes - AUTO EVERYTHING
+  daily_notes:
+    auto_create: true  # Create automatically if doesn't exist
+    auto_open: true  # Open in Obsidian immediately
+    include_todos: true
+    include_energy_check: true  # New: "How's your energy today?"
+    include_previous_day_link: true
+    carry_forward_uncompleted: true  # Auto-carry incomplete tasks
+
+  # Linking - PROACTIVE BUT NOT ANNOYING
+  linking:
+    auto_link: true  # Create links automatically
+    min_similarity: 0.75  # Medium threshold
+    scan_all: false  # Only scan recent notes (faster)
+    visual_suggestions: true  # Show in Canvas when possible
+
+  # Projects - AUTO DASHBOARD
+  projects:
+    create_brief: false  # Too much overhead for ADHD
+    create_readme: true  # Simple README only
+    create_dashboard: true  # ⭐ AUTO-CREATE CANVAS DASHBOARD
+    initialize_git: false  # Too technical
+    track_sessions: true  # New: Track all sessions working on project
+
+  # Session management (THE KEY FEATURE)
+  sessions:
+    auto_save_on_end: true  # Save context when session ends
+    auto_load_on_start: true  # Load last context when starting
+    summary_format: "visual"  # Use emojis and clear sections
+    include_next_step: true  # ALWAYS include next exact step
+    prompt_for_notes: true  # Ask "Any notes before we end?"
+
+# ============================================================================
+# HOOKS CONFIGURATION (ADHD-OPTIMIZED)
+# ============================================================================
+
+hooks:
+  # session-start - SHOW CONTEXT IMMEDIATELY
+  session_start:
+    enabled: true
+    adhd_mode: true  # Special ADHD-friendly format
+    show_last_session_date: true
+    show_last_action: true  # "Last time: You were connecting the database"
+    show_next_step: true  # "Next step: Add email validation"
+    show_energy_recommendation: true  # "This task needs 🔋 high energy"
+    visual_format: true  # Use boxes, emojis, clear sections
+
+  # session-end - AUTO-SAVE CONTEXT (NEW HOOK)
+  session_end:
+    enabled: true
+    auto_trigger: true  # Trigger automatically
+    location: "_CONTEXT/sessions/{{date}}.md"
+    also_update_last: true  # Update _CONTEXT/LAST_SESSION.md
+    format: "adhd_friendly"  # Clear sections, visual
+    prompt_before_save: true  # "Want to add notes before I save?"
+
+  # frontmatter-helper - LESS STRICT
+  frontmatter_helper:
+    enabled: true
+    auto_suggest: true
+    required_only: true  # Only required fields (less overwhelm)
+    smart_defaults: true  # Auto-fill when obvious
+
+  # link-suggester - PROACTIVE BUT GENTLE
+  link_suggester:
+    enabled: true
+    trigger_folders:
+      - "PROJECTS"
+      - "IDEAS"
+      - "LEARNING"
+    min_suggestions: 1  # Show even single connection
+    visual_mode: true  # Offer to add to Canvas
+
+  # context-reminder (NEW HOOK) - PERIODIC REMINDERS
+  context_reminder:
+    enabled: true
+    trigger_every: 30  # Every 30 minutes
+    message: "🧠 Quick reminder: You're working on {{current_project}}. Next step: {{next_step}}"
+    gentle_mode: true  # Don't interrupt, just show in status
+
+# ============================================================================
+# ADVANCED SETTINGS (ADHD-OPTIMIZED)
+# ============================================================================
+
+advanced:
+  # Naming - SIMPLE
+  naming:
+    case: "kebab-case"
+    date_prefix: true  # Helps with chronological context
+    descriptive_names: true  # Use descriptive names, not just IDs
+
+  # Search - FAST
+  search:
+    exclude_folders:
+      - ".obsidian"
+      - ".trash"
+    cache_enabled: true  # Speed is crucial for ADHD
+
+  # Validation - LENIENT
+  validation:
+    strict_frontmatter: false  # Don't block, just warn
+    warn_missing_fields: false  # Too distracting
+    auto_fix: true  # Fix issues automatically
+
+  # Performance - OPTIMIZED FOR SPEED
+  performance:
+    cache_enabled: true
+    batch_size: 20  # Smaller batches = faster feedback
+    parallel_processing: true
+
+  # ADHD-specific settings
+  adhd:
+    quick_capture_mode: true  # Priority on speed over perfection
+    gentle_reminders: true  # Non-intrusive reminders
+    visual_feedback: true  # Use emojis and colors
+    break_reminders: true  # Remind to take breaks
+    hyperfocus_detection: true  # Detect long sessions, suggest break
+
+# ============================================================================
+# INTEGRATIONS (MINIMAL FOR SIMPLICITY)
+# ============================================================================
+
+integrations:
+  # Git - DISABLED (too technical)
+  git:
+    auto_commit: false
+
+  # Obsidian app
+  obsidian:
+    vault_path: ""  # Set your vault path
+    auto_open_files: true  # Open in Obsidian when created
+
+  # External tools
+  external:
+    timer: true  # Pomodoro timer integration (good for ADHD)
+    break_reminder: true  # Remind to take breaks
+
+# ============================================================================
+# CANVAS DASHBOARD SETTINGS (NEW)
+# ============================================================================
+
+canvas:
+  # Auto-generate dashboard
+  auto_generate: true
+  location: "DASHBOARD/home.canvas"
+
+  # What to show in dashboard
+  show_last_session: true
+  show_next_step: true
+  show_active_projects: true
+  show_recent_ideas: 3  # Show last 3 ideas
+  show_energy_status: true
+
+  # Visual style
+  use_colors: true
+  color_scheme:
+    completed: "#00ff00"  # Green
+    in_progress: "#ffa500"  # Orange
+    next_step: "#ff6b6b"  # Red (attention grabber)
+    ideas: "#a78bfa"  # Purple
+
+  # Layout
+  auto_layout: true  # Auto-arrange nodes
+  layout_style: "flowchart"  # Options: flowchart, mind-map, timeline
+
+# ============================================================================
+# COMMANDS CONFIGURATION (WHICH ONES TO ENABLE)
+# ============================================================================
+
+commands:
+  # Essential commands (always enabled)
+  enabled:
+    - setup-vault  # Initial setup
+    - daily-note  # Daily notes
+    - new-project  # Create projects
+    - project-status  # ⭐ THE KEY COMMAND for context
+    - process-inbox  # Organize notes
+    - organize-note  # Classify single note
+    - link-notes  # Find connections
+
+  # Optional commands (disable if not needed)
+  optional:
+    - video-note  # For learning from videos
+    - flashcards  # For learning/memorization
+
+  # Command defaults for ADHD
+  defaults:
+    guided_mode: true  # Always guide with clear steps
+    confirmation_prompts: false  # Skip "are you sure?"
+    verbose_output: true  # Show what's happening (transparency helps)
+    visual_feedback: true  # Use emojis and formatting
+
+# ============================================================================
+# NOTES - HOW THIS HELPS ADHD
+# ============================================================================
+
+# This configuration addresses ADHD challenges:
+#
+# 1. **Context Blindness** → Solved by:
+#    - session_end hook auto-saves context
+#    - session_start hook auto-loads context
+#    - _CONTEXT/LAST_SESSION.md always shows what's next
+#
+# 2. **Overwhelm** → Solved by:
+#    - Maximum automation (auto_classify, auto_open)
+#    - Minimal folder structure (3 categories)
+#    - Simplified frontmatter
+#
+# 3. **Losing Track** → Solved by:
+#    - Visual Canvas dashboard
+#    - /project-status shows everything
+#    - context_reminder hook (gentle reminders)
+#
+# 4. **Decision Fatigue** → Solved by:
+#    - Auto-classification
+#    - Smart defaults
+#    - No confirmation prompts
+#
+# 5. **Hyperfocus/Burnout** → Solved by:
+#    - Break reminders
+#    - Energy level tracking
+#    - Hyperfocus detection
+#
+# 6. **Forgetting Progress** → Solved by:
+#    - Session summaries with exact next steps
+#    - Project memory tracking
+#    - Visual dashboard of progress
+
+# ============================================================================
+# QUICK START FOR OLGA
+# ============================================================================
+
+# 1. Install plugin: `claude --plugin-dir path/to/obsidian-plugin`
+# 2. Run setup: `/setup-vault` → Choose "Creative ADHD"
+# 3. Answer 3-4 simple questions
+# 4. Done! Start with: `/new-project "AppSalud"`
+# 5. Work on it, then check: `/project-status AppSalud`
+# 6. When done, close session → auto-saves context
+# 7. Next day: Open Claude → sees exactly where you left off
+#
+# No complex commands. No terminal. Just natural conversation with Claude
+# and the system remembers EVERYTHING for you.

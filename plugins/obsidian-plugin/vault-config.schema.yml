@@ -1,0 +1,256 @@
+# Vault Configuration Schema
+# This file documents all possible fields and their meanings for .claude/vault-config.yml
+# Copy this to .claude/vault-config.yml in your vault and customize
+
+# ============================================================================
+# VAULT METADATA
+# ============================================================================
+
+# Name of your vault (used in templates and displays)
+vault_name: "MyVault"  # Required, string
+
+# Optional: Owner/author information
+owner:
+  name: "Your Name"  # Optional, string
+  email: "your@email.com"  # Optional, string
+  role: "Your Role"  # Optional, string (e.g., "Student", "Researcher", "Writer")
+
+# ============================================================================
+# FOLDER STRUCTURE
+# ============================================================================
+
+folders:
+  # Core folders - most commands use these
+  inbox: "INBOX/_quick-notes"  # Required - where unprocessed notes go
+  knowledge: "KNOWLEDGE"  # Required - main knowledge base
+  projects: "PROJECTS"  # Required - project management
+  templates: "_SYSTEM/templates"  # Required - note templates
+
+  # Optional folders - only needed if you use related commands
+  resources: "RECURSOS"  # Optional - external resources (papers, videos, books)
+  productivity: "PRODUCTIVITY"  # Optional - productivity tracking
+  daily_notes: "PRODUCTIVITY/daily-notes"  # Optional - daily notes location
+  ideas: "IDEAS"  # Optional - brainstorming and ideas
+  canvas: "CANVAS"  # Optional - visual diagrams
+  memories: "AGENT-MEMORIES"  # Optional - agent persistent memory
+  archive: "ARCHIVE"  # Optional - archived notes
+
+  # Custom folders - add any additional folders your vault uses
+  # custom_folder: "PATH/TO/FOLDER"
+
+# ============================================================================
+# CATEGORIES / DISCIPLINES / TOPICS
+# ============================================================================
+
+# Define how you organize your knowledge base
+# Commands like /organize-note and /process-inbox use these
+categories:
+  - name: "AI-ML"  # Display name
+    folder: "KNOWLEDGE/IA-ML"  # Folder path
+    description: "Artificial Intelligence and Machine Learning"  # Optional
+
+  - name: "Philosophy"
+    folder: "KNOWLEDGE/Philosophy"
+    description: "Philosophy and ethics"
+
+  # Add more categories as needed
+  # - name: "Category Name"
+  #   folder: "KNOWLEDGE/CategoryFolder"
+  #   description: "Optional description"
+
+# Alternative flat list (for simpler setups)
+# categories: ["AI-ML", "Philosophy", "Science", "Art"]
+
+# ============================================================================
+# FRONTMATTER SCHEMA
+# ============================================================================
+
+# Defines what metadata fields appear in your notes
+frontmatter_schema:
+  # Fields that MUST be in every note
+  required_fields:
+    - id
+    - created
+    - modified
+    - tipo  # or "type" in English
+    - estado  # or "status" in English
+
+  # Fields that CAN be in notes (optional)
+  optional_fields:
+    - disciplinas  # or "categories", "topics", "subjects"
+    - proyectos  # or "projects"
+    - tags
+    - tiene-todos  # "has-todos" - boolean for TODO tracking
+    - descripcion  # or "description"
+
+  # Allowed values for "tipo" field
+  tipo_values:
+    - estudio  # or "study", "note"
+    - proyecto  # or "project"
+    - recurso  # or "resource"
+    - idea  # or "idea"
+    - daily  # daily note
+    - review  # review/retrospective
+    - inbox  # unprocessed note
+
+  # Allowed values for "estado" field
+  estado_values:
+    - activo  # or "active"
+    - archivado  # or "archived"
+    - draft  # draft
+    - en-revision  # or "in-review"
+    - completado  # or "completed"
+
+# ============================================================================
+# TEMPLATES
+# ============================================================================
+
+# Template configuration
+templates:
+  # Which template set to use
+  set: "francovault"  # Options: "francovault", "minimal", "custom"
+
+  # Template-specific settings
+  use_emojis: true  # Whether templates include emojis
+  date_format: "YYYY-MM-DD"  # Date format for {{date}} variables
+
+  # Template file mappings (override defaults)
+  files:
+    daily_note: "daily-note.md"
+    quick_note: "quick-note.md"
+    study_note: "note-estudio.md"
+    idea_note: "note-idea.md"
+    resource_note: "note-recurso.md"
+    project_readme: "project-readme.md"
+    # Add custom template mappings
+
+# ============================================================================
+# WORKFLOW PREFERENCES
+# ============================================================================
+
+# Customize command behaviors
+workflows:
+  # /process-inbox settings
+  inbox:
+    auto_classify: false  # Auto-classify without asking
+    move_files: true  # Move files or copy them
+    create_backlinks: true  # Create [[backlinks]] to related notes
+
+  # /daily-note settings
+  daily_notes:
+    auto_open: false  # Auto-open in Obsidian after creation
+    include_todos: true  # Include TODO section
+    include_previous_day_link: true  # Link to previous day
+
+  # /link-notes settings
+  linking:
+    auto_link: false  # Automatically add wikilinks without asking
+    min_similarity: 0.7  # Similarity threshold for suggestions (0-1)
+    scan_all: false  # Scan entire vault or just key folders
+
+  # /new-project settings
+  projects:
+    create_brief: true  # Auto-create BRIEF.md
+    create_readme: true  # Auto-create README.md
+    initialize_git: false  # Run git init in project folder
+
+# ============================================================================
+# HOOKS CONFIGURATION
+# ============================================================================
+
+# Configure hook behaviors
+hooks:
+  # session-summary hook (SessionStart)
+  session_summary:
+    enabled: true
+    show_inbox_count: true
+    show_daily_note_status: true
+    show_overdue_todos: true
+
+  # frontmatter-helper hook (PostToolUse Write)
+  frontmatter_helper:
+    enabled: true
+    auto_suggest: true  # Suggest frontmatter for new .md files
+    required_only: false  # Suggest only required fields or all fields
+
+  # link-suggester hook (PostToolUse Write)
+  link_suggester:
+    enabled: true
+    trigger_folders:  # Only trigger in these folders
+      - "KNOWLEDGE"
+      - "PROJECTS"
+    min_suggestions: 2  # Minimum number of suggestions to show
+
+# ============================================================================
+# ADVANCED SETTINGS
+# ============================================================================
+
+# Advanced configuration options
+advanced:
+  # File naming conventions
+  naming:
+    case: "kebab-case"  # Options: "kebab-case", "snake_case", "camelCase"
+    date_prefix: false  # Prefix filenames with dates (YYYY-MM-DD-)
+
+  # Search and indexing
+  search:
+    exclude_folders:  # Folders to exclude from searches
+      - "ARCHIVE"
+      - ".obsidian"
+      - ".trash"
+
+  # Validation
+  validation:
+    strict_frontmatter: true  # Enforce frontmatter schema strictly
+    warn_missing_fields: true  # Warn about missing optional fields
+
+  # Performance
+  performance:
+    cache_enabled: false  # Enable caching for faster searches
+    batch_size: 50  # Number of files to process at once
+
+# ============================================================================
+# INTEGRATIONS (Optional)
+# ============================================================================
+
+# Integration with other tools
+integrations:
+  # Git integration
+  git:
+    auto_commit: false
+    commit_message_template: "Auto-commit: {{date}}"
+
+  # Obsidian app integration
+  obsidian:
+    vault_path: ""  # Absolute path to vault (for opening in Obsidian)
+
+  # External tools
+  external:
+    spaced_repetition: true  # Enable flashcard integration
+    # Add other integrations
+
+# ============================================================================
+# NOTES
+# ============================================================================
+
+# This schema is comprehensive but not all fields are required.
+# Minimum required configuration:
+#
+# vault_name: "MyVault"
+# folders:
+#   inbox: "INBOX"
+#   knowledge: "KNOWLEDGE"
+#   projects: "PROJECTS"
+#   templates: "_SYSTEM/templates"
+# categories:
+#   - name: "General"
+#     folder: "KNOWLEDGE/General"
+# frontmatter_schema:
+#   required_fields: [id, created, modified, tipo, estado]
+#
+# All commands will work with just these basics!
+
+# For examples of complete configurations, see:
+# - config-examples/francovault-config.yml (full-featured)
+# - config-examples/minimal-config.yml (bare minimum)
+# - config-examples/researcher-config.yml (academic focused)

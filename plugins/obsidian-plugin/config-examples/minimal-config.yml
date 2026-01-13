@@ -1,0 +1,158 @@
+# Minimal Configuration
+# Bare-bones setup for simple note-taking and project management
+# Perfect for getting started quickly
+
+vault_name: "MyVault"
+
+# ============================================================================
+# FOLDER STRUCTURE
+# ============================================================================
+
+folders:
+  # Only the essentials
+  inbox: "INBOX"
+  knowledge: "NOTES"  # Using "NOTES" instead of "KNOWLEDGE" for simplicity
+  projects: "PROJECTS"
+  templates: "Templates"
+
+# ============================================================================
+# CATEGORIES
+# ============================================================================
+
+# Simple flat category list
+categories:
+  - name: "General"
+    folder: "NOTES/General"
+
+  - name: "Work"
+    folder: "NOTES/Work"
+
+  - name: "Personal"
+    folder: "NOTES/Personal"
+
+# ============================================================================
+# FRONTMATTER SCHEMA
+# ============================================================================
+
+frontmatter_schema:
+  # Minimal required fields
+  required_fields:
+    - id
+    - created
+    - modified
+    - type
+    - status
+
+  # Keep it simple
+  optional_fields:
+    - category
+    - tags
+
+  tipo_values:
+    - note
+    - project
+    - idea
+    - daily
+
+  estado_values:
+    - active
+    - archived
+    - draft
+
+# ============================================================================
+# TEMPLATES
+# ============================================================================
+
+templates:
+  set: "minimal"
+  use_emojis: false  # Plain text templates
+  date_format: "YYYY-MM-DD"
+
+  files:
+    daily_note: "daily-note.md"
+    quick_note: "quick-note.md"
+
+# ============================================================================
+# WORKFLOW PREFERENCES
+# ============================================================================
+
+workflows:
+  inbox:
+    auto_classify: false
+    move_files: true
+    create_backlinks: false  # Keep it simple
+
+  daily_notes:
+    auto_open: false
+    include_todos: true
+    include_previous_day_link: false
+
+  linking:
+    auto_link: false
+    min_similarity: 0.8  # Higher threshold = fewer suggestions
+    scan_all: false
+
+  projects:
+    create_brief: false  # Only README
+    create_readme: true
+    initialize_git: false
+
+# ============================================================================
+# HOOKS CONFIGURATION
+# ============================================================================
+
+hooks:
+  session_summary:
+    enabled: true
+    show_inbox_count: true
+    show_daily_note_status: false  # Minimal info
+    show_overdue_todos: false
+
+  frontmatter_helper:
+    enabled: true
+    auto_suggest: true
+    required_only: true  # Only suggest required fields
+
+  link_suggester:
+    enabled: false  # Disable for minimal setup
+
+# ============================================================================
+# ADVANCED SETTINGS
+# ============================================================================
+
+advanced:
+  naming:
+    case: "kebab-case"
+    date_prefix: false
+
+  search:
+    exclude_folders:
+      - ".obsidian"
+      - ".trash"
+
+  validation:
+    strict_frontmatter: false  # Be lenient
+    warn_missing_fields: false
+
+  performance:
+    cache_enabled: false
+    batch_size: 50
+
+# ============================================================================
+# NOTES
+# ============================================================================
+
+# This minimal configuration is perfect for:
+# - Quick start without complexity
+# - Simple note-taking workflows
+# - Users new to PKM systems
+# - Lightweight project management
+
+# What's included:
+# - 3 simple categories (General, Work, Personal)
+# - Minimal frontmatter (just the basics)
+# - Plain text templates (no emojis)
+# - Essential commands only
+# - Simplified validation
+
+# You can always upgrade to a more complex setup later!

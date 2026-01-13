@@ -1,0 +1,211 @@
+# FrancoVault Configuration
+# Full-featured configuration based on Franco Escobar's personal vault
+# Engineering/research focused with comprehensive knowledge management
+
+vault_name: "FrancoVault"
+
+owner:
+  name: "Franco Escobar"
+  email: "francoescobarvrx@gmail.com"
+  role: "Estudiante IA @ FICH UNL, CTO SaaS"
+
+# ============================================================================
+# FOLDER STRUCTURE
+# ============================================================================
+
+folders:
+  # Core folders
+  inbox: "INBOX/_quick-notes"
+  knowledge: "KNOWLEDGE"
+  projects: "PROJECTS"
+  templates: "_SYSTEM/templates"
+
+  # Additional folders
+  resources: "RECURSOS"
+  productivity: "PRODUCTIVITY"
+  daily_notes: "PRODUCTIVITY/daily-notes"
+  ideas: "IDEAS"
+  canvas: "CANVAS"
+  memories: "AGENT-MEMORIES"
+
+# ============================================================================
+# CATEGORIES / DISCIPLINES
+# ============================================================================
+
+# Engineering and research disciplines
+categories:
+  - name: "IA-ML"
+    folder: "KNOWLEDGE/IA-ML"
+    description: "Inteligencia Artificial y Machine Learning"
+
+  - name: "Electronica"
+    folder: "KNOWLEDGE/Electronica"
+    description: "Electrónica y sistemas embebidos"
+
+  - name: "Aeroespacial"
+    folder: "KNOWLEDGE/Aeroespacial"
+    description: "Ingeniería aeroespacial y drones"
+
+  - name: "Mecatronica-Robotica"
+    folder: "KNOWLEDGE/Mecatronica-Robotica"
+    description: "Mecatrónica, robótica y automatización"
+
+  - name: "Matematica-Fisica"
+    folder: "KNOWLEDGE/Matematica-Fisica"
+    description: "Matemática y física aplicada"
+
+# ============================================================================
+# FRONTMATTER SCHEMA
+# ============================================================================
+
+frontmatter_schema:
+  required_fields:
+    - id
+    - created
+    - modified
+    - tipo
+    - estado
+
+  optional_fields:
+    - disciplinas
+    - proyectos
+    - tags
+    - tiene-todos
+    - descripcion
+
+  tipo_values:
+    - estudio
+    - proyecto
+    - recurso
+    - idea
+    - daily
+    - review
+    - inbox
+
+  estado_values:
+    - activo
+    - archivado
+    - draft
+    - en-revision
+    - completado
+
+# ============================================================================
+# TEMPLATES
+# ============================================================================
+
+templates:
+  set: "francovault"
+  use_emojis: true
+  date_format: "YYYY-MM-DD"
+
+  files:
+    daily_note: "daily-note.md"
+    quick_note: "quick-note.md"
+    study_note: "note-estudio.md"
+    idea_note: "note-idea.md"
+    resource_note: "note-recurso.md"
+    weekly_review: "review-weekly.md"
+    monthly_review: "review-monthly.md"
+
+# ============================================================================
+# WORKFLOW PREFERENCES
+# ============================================================================
+
+workflows:
+  inbox:
+    auto_classify: false
+    move_files: true
+    create_backlinks: true
+
+  daily_notes:
+    auto_open: false
+    include_todos: true
+    include_previous_day_link: true
+
+  linking:
+    auto_link: false
+    min_similarity: 0.7
+    scan_all: false
+
+  projects:
+    create_brief: true
+    create_readme: true
+    initialize_git: false
+
+# ============================================================================
+# HOOKS CONFIGURATION
+# ============================================================================
+
+hooks:
+  session_summary:
+    enabled: true
+    show_inbox_count: true
+    show_daily_note_status: true
+    show_overdue_todos: true
+
+  frontmatter_helper:
+    enabled: true
+    auto_suggest: true
+    required_only: false
+
+  link_suggester:
+    enabled: true
+    trigger_folders:
+      - "KNOWLEDGE"
+      - "PROJECTS"
+    min_suggestions: 2
+
+# ============================================================================
+# ADVANCED SETTINGS
+# ============================================================================
+
+advanced:
+  naming:
+    case: "kebab-case"
+    date_prefix: false
+
+  search:
+    exclude_folders:
+      - ".obsidian"
+      - ".trash"
+
+  validation:
+    strict_frontmatter: true
+    warn_missing_fields: true
+
+  performance:
+    cache_enabled: false
+    batch_size: 50
+
+# ============================================================================
+# INTEGRATIONS
+# ============================================================================
+
+integrations:
+  git:
+    auto_commit: false
+    commit_message_template: "Auto-commit: {{date}}"
+
+  obsidian:
+    vault_path: "C:\\Users\\frand\\Desktop\\FrancoVault"
+
+  external:
+    spaced_repetition: true
+
+# ============================================================================
+# NOTES
+# ============================================================================
+
+# This is Franco's personal configuration optimized for:
+# - Engineering and research work
+# - Multiple technical disciplines
+# - Project management
+# - Daily productivity tracking
+# - Knowledge interconnection
+
+# Key features:
+# - 5 specialized disciplines with dedicated folders
+# - Rich emoji-based templates
+# - Comprehensive frontmatter tracking
+# - Proactive hooks for automation
+# - Strict validation for consistency
