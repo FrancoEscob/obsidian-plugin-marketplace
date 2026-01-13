@@ -1091,6 +1091,440 @@ Próxima sesión:
 ---
 
 ## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## FASE 7.5: Generar Instrucciones para Agentes
+## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+### PASO 7.5.1: Cargar Template
+
+1. **Leer template base:**
+```bash
+Read([plugin-dir]/templates/agent-instructions/CLAUDE.md.template)
+```
+
+2. **Guardar contenido en variable** `$TEMPLATE`
+
+### PASO 7.5.2: Preparar Datos Dinámicos
+
+**Recopilar información generada en fases anteriores:**
+
+```python
+# Datos del vault-config.yml generado
+vault_data = {
+    # Básicos
+    "VAULT_NAME": [nombre del directorio del vault, ej: "FrancoVault"],
+    "VAULT_PATH": [ruta absoluta, usar pwd],
+    "CONFIG_NAME": [nombre elegido: "FrancoVault Full" / "Minimal Setup" / "Creative ADHD" / "Academic Researcher"],
+    "DATE": "YYYY-MM-DD" [fecha actual],
+    
+    # Carpetas (usar nombres EXACTOS del vault-config.yml)
+    "FOLDER_TREE": """├── $INBOX_FOLDER/_quick-notes/
+├── $KNOWLEDGE_FOLDER/
+├── $PROJECTS_FOLDER/
+├── $IDEAS_FOLDER/
+├── $RECURSOS_FOLDER/
+├── $PRODUCTIVITY_FOLDER/
+├── $CANVAS_FOLDER/
+[Si ADHD: ├── $CONTEXT_FOLDER/sessions/]
+[Si tiene: ├── $AGENT_MEMORIES_FOLDER/]""",
+    
+    "FOLDER_DETAILS": """**$INBOX_FOLDER/_quick-notes/**
+- Purpose: Quick capture for unprocessed notes
+- Usage: Drop ideas here without thinking about organization
+[Si auto_classify: - ⚡ Auto-processed by `/process-inbox` (no confirmations)]
+
+**$KNOWLEDGE_FOLDER/**
+- Purpose: [Descripción según config]
+- Usage: Organized knowledge by [categories/disciplines]
+
+[... para cada carpeta del config...]""",
+    
+    # Comportamientos especiales
+    "ADHD_WARNING": [Si creative-adhd config:]
+"""**⚠️ ADHD-Optimized Vault:**
+- Auto-classification is ENABLED (no confirmations needed)
+- Session context is AUTO-SAVED after each session (never lose track)
+- Maximum automation, zero friction workflows"""
+[sino: ""],
+    
+    "INBOX_BEHAVIOR": [Si auto_classify true:]
+"⚡ Auto-classifies without asking when config has auto_classify: true (ADHD mode)"
+[sino:]
+"Shows classification table and asks for confirmation before moving",
+    
+    "CANVAS_BEHAVIOR": [Si canvas enabled:]
+"Can generate visual dashboards with --canvas flag. Saves to $CANVAS_FOLDER/"
+[sino:]
+"Canvas generation disabled in config",
+    
+    # Workflows
+    "WORKFLOWS_SECTION": [Si auto_classify true:]
+"""### 📥 Auto-Classification (ENABLED)
+
+When you run `/process-inbox`:
+- ❌ DO NOT ask for confirmation
+- ✅ Automatically classify notes based on content analysis
+- ✅ Move to correct destination folder
+- ✅ Generate proper frontmatter
+- ⚡ Zero friction workflow (ADHD-friendly)
+
+**Classification logic:**
+- Study/learning content → `$KNOWLEDGE_FOLDER/[category]/`
+- Ideas and brainstorming → `$IDEAS_FOLDER/`
+- Resources (videos, papers) → `$RECURSOS_FOLDER/[type]/`
+- Project-specific notes → `$PROJECTS_FOLDER/[project-name]/`"""
+
+[Si canvas enabled, agregar:]
+"""
+### 🎨 Canvas Dashboards (ENABLED)
+
+`/project-status project-name --canvas` generates visual project dashboards:
+- Saved to: `$CANVAS_FOLDER/[project]-dashboard.canvas`
+- Shows: project progress, active tasks, next steps
+- Auto-updates each time you run the command
+- Open in Obsidian to see visual diagram"""
+
+[Si session-end hook, agregar:]
+"""
+### 💾 Session Context Auto-Save (ENABLED) ⭐
+
+**ADHD Feature - Never Lose Your Train of Thought:**
+
+When you end a Claude session:
+1. Claude asks: "Notes before we finish?"
+2. Automatically generates comprehensive session summary
+3. Saves to: `$CONTEXT_FOLDER/sessions/YYYY-MM-DD.md`
+4. Updates: `$CONTEXT_FOLDER/LAST_SESSION.md` with latest context
+
+Next session:
+- Claude reads LAST_SESSION.md automatically
+- Shows: "Last time you were working on [X]..."
+- Exact next step preserved
+- **You NEVER lose context between sessions** 🎯"""
+
+[Sino workflows mínimos:]
+"""### 📥 Manual Classification
+
+When you run `/process-inbox`:
+- Shows classification table with suggested destinations
+- Asks: "Proceed with this classification? (y/n/edit)"
+- You confirm before any notes are moved
+- Full control over organization""",
+    
+    # Frontmatter
+    "FRONTMATTER_SCHEMA": [Si simple/minimal:]
+"""id: note-title
+created: YYYY-MM-DD
+tipo: proyecto | estudio | recurso | idea | daily
+estado: activo | archivado | draft"""
+
+[Si detailed/francovault:]
+"""id: tipo-descripcion-corta
+created: YYYY-MM-DD
+modified: YYYY-MM-DD
+tipo: estudio | proyecto | recurso | idea | daily | review
+estado: activo | archivado | draft | en-revision
+disciplinas: [IA-ML, Electronica, ...]
+proyectos: [ProjectName, ...]
+tags: [tag1, tag2]
+tiene-todos: false""",
+    
+    "FRONTMATTER_RULES": [Si detailed:]
+"- Set `tiene-todos: true` if note contains TODO checkboxes\n- Use `disciplinas` array for knowledge categorization\n- Use `proyectos` array to link to active projects"
+[sino: ""],
+    
+    # Búsquedas
+    "EXAMPLE_FOLDER": $KNOWLEDGE_FOLDER [o primera carpeta que exista],
+    "EXAMPLE_TYPE": "estudio" [o primer tipo del frontmatter],
+    
+    "SEARCH_PATTERNS": [Si tiene projects:]
+"| By project | `grep \"proyectos:.*ProjectName\" --type md` |"
+[Si tiene categories/disciplinas:]
+"| By category | `grep \"disciplinas:.*CategoryName\" --type md` |"
+[Si tiene tiene-todos:]
+"| Notes with TODOs | `grep \"tiene-todos: true\" --type md` |",
+    
+    # Agent Memory
+    "AGENT_MEMORY_SECTION": [Si tiene agent_memories folder:]
+"""## 🧠 AGENT MEMORY
+
+**Location:** `$AGENT_MEMORIES_FOLDER/`
+
+### When to Save Memories
+- Research findings that required significant effort
+- User preferences and workflow discoveries
+- Architectural decisions and their rationale
+- Solutions to complex problems
+- Work in progress to resume in future sessions
+
+### When to Consult Memories
+- Before starting research on a topic
+- When resuming work from previous sessions
+- When user asks questions that might have been answered before
+
+### Search Memories
+```bash
+# View memory categories
+ls $AGENT_MEMORIES_FOLDER/
+
+# Search by summary (fast)
+grep "^summary:.*keyword" "$AGENT_MEMORIES_FOLDER/" -r -i
+
+# Search full content
+grep "keyword" "$AGENT_MEMORIES_FOLDER/" -r -i
+```
+
+### Create Memory
+```bash
+mkdir -p $AGENT_MEMORIES_FOLDER/category/
+# Create .md file with frontmatter: summary, created, tags
+```"""
+[Sino:]
+"""## 🧠 AGENT MEMORY
+
+**Note:** This vault doesn't have a dedicated agent memory folder.
+
+Consider using `$PRODUCTIVITY_FOLDER/` or [context folder si existe] for session notes and persistent context.""",
+    
+    # Main Workflows
+    "MAIN_WORKFLOWS": """### Process Inbox
+
+**Command:** `/process-inbox`
+
+**Steps:**
+1. Read notes in `$INBOX_FOLDER/_quick-notes/`
+2. Analyze content → determine type, category, project
+3. Generate appropriate frontmatter
+4. [Si auto: Move automatically | Sino: Show table and ask confirmation]
+5. Report results
+
+[Si auto_classify:]
+**Automation:** Auto-classification enabled (no confirmations)
+
+### Create Daily Note
+
+**Command:** `/daily-note`
+
+**Steps:**
+1. Generate date: YYYY-MM-DD
+2. Create in: `$PRODUCTIVITY_FOLDER/daily-notes/YYYY/MM-MONTH/`
+3. Include context from inbox
+4. Show recent activity
+5. Set up daily tasks section
+
+[Si tiene projects:]
+### New Project
+
+**Command:** `/new-project "project-name"`
+
+**Steps:**
+1. Create project folder in `$PROJECTS_FOLDER/`
+2. Generate README.md with project brief
+3. [Si research enabled: Optional research phase]
+4. Create initial structure
+5. Link to productivity dashboard
+
+### Project Status
+
+**Command:** `/project-status project-name`
+
+**Steps:**
+1. Read project README and notes
+2. Extract tasks and progress
+3. Analyze next steps
+4. [Si canvas: Generate visual dashboard with --canvas flag]
+5. Show comprehensive report
+""",
+    
+    # Content Mappings
+    "CONTENT_MAPPINGS": [Dinámico según carpetas:]
+"""| Content Type | Location |
+|--------------|----------|
+| Study notes | `$KNOWLEDGE_FOLDER/[category]/` |
+| Quick ideas | `$INBOX_FOLDER/_quick-notes/` |
+[Si projects: | Project files | `$PROJECTS_FOLDER/[project-name]/` |]
+[Si ideas: | Brainstorming | `$IDEAS_FOLDER/` |]
+[Si recursos: | Papers/Videos | `$RECURSOS_FOLDER/[type]/` |]
+| Daily notes | `$PRODUCTIVITY_FOLDER/daily-notes/` |
+[Si canvas: | Diagrams | `$CANVAS_FOLDER/` |]
+[Si agent_memories: | Agent memories | `$AGENT_MEMORIES_FOLDER/[category]/` |]""",
+    
+    # Additional Rules
+    "ADDITIONAL_RULES": [Si tiene agent_memories:]
+"6. **Save useful findings** to $AGENT_MEMORIES_FOLDER/ for future reference"
+[Si auto_classify:]
+"6. **Trust auto-classification** - it's enabled for a reason (reduces friction)"
+[sino: ""],
+    
+    # Troubleshooting
+    "TROUBLESHOOTING_CONTEXT": [Si tiene session-end hook:]
+"""
+### If you lose context between sessions:
+- Check `$CONTEXT_FOLDER/LAST_SESSION.md` for latest summary
+- Review `$CONTEXT_FOLDER/sessions/` folder for historical context
+- Session summaries are automatically generated on exit"""
+[sino:]
+"""
+### If you lose context:
+- Consider re-running `/setup-vault` and enabling session hooks
+- Use `/daily-note` to maintain daily context
+- Keep active work notes in `$PRODUCTIVITY_FOLDER/`""",
+    
+    # Settings
+    "AUTOMATION_LEVEL": [minimal/medium/high según config],
+    "AUTO_CLASSIFY": [true/false],
+    "CANVAS_ENABLED": [true/false],
+    "FRONTMATTER_TYPE": [simple/detailed]
+}
+```
+
+### PASO 7.5.3: Renderizar Template
+
+**Proceso de reemplazo:**
+
+1. Copiar `$TEMPLATE` a `$RENDERED`
+
+2. Reemplazar todos los placeholders:
+```python
+# Reemplazos directos
+$RENDERED = str_replace($RENDERED, "{{VAULT_NAME}}", vault_data["VAULT_NAME"])
+$RENDERED = str_replace($RENDERED, "{{CONFIG_NAME}}", vault_data["CONFIG_NAME"])
+$RENDERED = str_replace($RENDERED, "{{DATE}}", vault_data["DATE"])
+$RENDERED = str_replace($RENDERED, "{{VAULT_PATH}}", vault_data["VAULT_PATH"])
+
+# Folders
+$RENDERED = str_replace($RENDERED, "{{FOLDER_TREE}}", vault_data["FOLDER_TREE"])
+$RENDERED = str_replace($RENDERED, "{{FOLDER_DETAILS}}", vault_data["FOLDER_DETAILS"])
+$RENDERED = str_replace($RENDERED, "{{EXAMPLE_FOLDER}}", vault_data["EXAMPLE_FOLDER"])
+
+# Warnings y behaviors
+$RENDERED = str_replace($RENDERED, "{{ADHD_WARNING}}", vault_data["ADHD_WARNING"])
+$RENDERED = str_replace($RENDERED, "{{INBOX_BEHAVIOR}}", vault_data["INBOX_BEHAVIOR"])
+$RENDERED = str_replace($RENDERED, "{{CANVAS_BEHAVIOR}}", vault_data["CANVAS_BEHAVIOR"])
+
+# Sections dinámicas
+$RENDERED = str_replace($RENDERED, "{{WORKFLOWS_SECTION}}", vault_data["WORKFLOWS_SECTION"])
+$RENDERED = str_replace($RENDERED, "{{FRONTMATTER_SCHEMA}}", vault_data["FRONTMATTER_SCHEMA"])
+$RENDERED = str_replace($RENDERED, "{{FRONTMATTER_RULES}}", vault_data["FRONTMATTER_RULES"])
+$RENDERED = str_replace($RENDERED, "{{AGENT_MEMORY_SECTION}}", vault_data["AGENT_MEMORY_SECTION"])
+$RENDERED = str_replace($RENDERED, "{{MAIN_WORKFLOWS}}", vault_data["MAIN_WORKFLOWS"])
+$RENDERED = str_replace($RENDERED, "{{CONTENT_MAPPINGS}}", vault_data["CONTENT_MAPPINGS"])
+
+# Search patterns
+$RENDERED = str_replace($RENDERED, "{{EXAMPLE_TYPE}}", vault_data["EXAMPLE_TYPE"])
+$RENDERED = str_replace($RENDERED, "{{SEARCH_PATTERNS}}", vault_data["SEARCH_PATTERNS"])
+
+# Rules y troubleshooting
+$RENDERED = str_replace($RENDERED, "{{ADDITIONAL_RULES}}", vault_data["ADDITIONAL_RULES"])
+$RENDERED = str_replace($RENDERED, "{{TROUBLESHOOTING_CONTEXT}}", vault_data["TROUBLESHOOTING_CONTEXT"])
+
+# Settings
+$RENDERED = str_replace($RENDERED, "{{AUTOMATION_LEVEL}}", vault_data["AUTOMATION_LEVEL"])
+$RENDERED = str_replace($RENDERED, "{{AUTO_CLASSIFY}}", vault_data["AUTO_CLASSIFY"])
+$RENDERED = str_replace($RENDERED, "{{CANVAS_ENABLED}}", vault_data["CANVAS_ENABLED"])
+$RENDERED = str_replace($RENDERED, "{{FRONTMATTER_TYPE}}", vault_data["FRONTMATTER_TYPE"])
+```
+
+3. **Limpiar líneas vacías excesivas** (más de 2 seguidas)
+
+4. **Resultado:** CLAUDE.md completo y personalizado
+
+### PASO 7.5.4: Escribir CLAUDE.md
+
+```bash
+# Guardar en la raíz del vault
+Write("CLAUDE.md", $RENDERED)
+```
+
+**Confirmar creación:**
+```
+✅ CLAUDE.md creado en la raíz del vault
+   (Instrucciones personalizadas para agentes IA)
+```
+
+### PASO 7.5.5: Preguntar por AGENTS.md
+
+Usar AskUserQuestion:
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+¿Usarás otros agentes de IA además de Claude Code?
+
+Ejemplos: Cursor, Windsurf, Cline, Aider, Continue, etc.
+
+Si dices "sí", crearemos AGENTS.md (copia de CLAUDE.md)
+para que todos los agentes tengan las mismas instrucciones.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Respuesta (s/n):
+```
+
+**Si responde "s" o "S" o "yes" o "sí":**
+```bash
+# Copiar CLAUDE.md → AGENTS.md
+cp CLAUDE.md AGENTS.md
+echo "✅ AGENTS.md creado (copia idéntica de CLAUDE.md)"
+echo "   Otros agentes podrán leer las mismas instrucciones"
+```
+
+**Si responde "n" o "N" o "no":**
+```bash
+echo "Solo CLAUDE.md creado."
+echo "💡 Tip: Puedes crear AGENTS.md después con: cp CLAUDE.md AGENTS.md"
+```
+
+### PASO 7.5.6: Reportar
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        📖 INSTRUCCIONES PARA AGENTES GENERADAS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ CLAUDE.md creado en la raíz del vault
+[Si AGENTS.md creado:]
+✅ AGENTS.md creado (para otros agentes IA)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+           ¿QUÉ CONTIENEN ESTOS ARCHIVOS?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📂 Estructura de tu vault (con nombres exactos de carpetas)
+🛠️  Comandos disponibles y cómo usarlos
+⚙️  Workflows y automatizaciones activas
+📝 Frontmatter schema personalizado
+🔍 Patrones de búsqueda optimizados
+⚠️  Reglas importantes y buenas prácticas
+🎯 Workflows principales explicados
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                  ¿CÓMO FUNCIONA?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Claude Code lee CLAUDE.md automáticamente al iniciar
+cada sesión en este directorio.
+
+[Si AGENTS.md:]
+Otros agentes (Cursor, Windsurf, etc.) pueden leer
+AGENTS.md para tener el mismo contexto.
+
+Esto asegura que los agentes:
+- Conozcan tu estructura de carpetas
+- Usen los comandos correctamente
+- Respeten tus preferencias de automatización
+- Sigan tu schema de frontmatter
+- Entiendan tus workflows
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 Puedes editar CLAUDE.md manualmente si quieres
+   agregar instrucciones personalizadas adicionales.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+---
+
+## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ## FASE 8: Post-Setup Opcional
 ## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
