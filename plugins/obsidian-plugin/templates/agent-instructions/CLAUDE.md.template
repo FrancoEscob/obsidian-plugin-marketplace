@@ -172,6 +172,12 @@ grep "keyword" --type md -i
 
 ---
 
+## 🔗 HOOKS ACTIVE
+
+{{HOOKS_SECTION}}
+
+---
+
 ## 🔧 CONFIGURATION
 
 This vault's configuration is in: `.claude/vault-config.yml`

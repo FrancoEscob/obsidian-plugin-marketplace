@@ -795,49 +795,121 @@ preferences:
 
 Usar Write para crear `.claude/vault-config.yml`
 
-### PASO 6.3: Generar hooks.json
+### PASO 6.3: Generar Scripts de Hooks
+
+**IMPORTANTE:** SessionStart y SessionEnd hooks usan scripts bash, NO prompts.
+
+#### Si eligió session hooks:
+
+1. **Crear directorio de hooks:**
+```bash
+mkdir -p .claude/hooks
+```
+
+2. **Copiar template session-start.sh:**
+```bash
+# Leer template
+Read([plugin-dir]/templates/hooks/session-start.sh)
+
+# Reemplazar {{CONTEXT_FOLDER}} con el nombre real
+# Guardar en .claude/hooks/session-start.sh
+Write(".claude/hooks/session-start.sh", $SESSION_START_CONTENT)
+
+# Dar permisos de ejecución
+Execute("chmod +x .claude/hooks/session-start.sh")
+```
+
+3. **Copiar template session-end.sh:**
+```bash
+# Leer template
+Read([plugin-dir]/templates/hooks/session-end.sh)
+
+# Reemplazar {{CONTEXT_FOLDER}} con el nombre real
+# Guardar en .claude/hooks/session-end.sh
+Write(".claude/hooks/session-end.sh", $SESSION_END_CONTENT)
+
+# Dar permisos de ejecución
+Execute("chmod +x .claude/hooks/session-end.sh")
+```
+
+### PASO 6.4: Generar hooks.json
 
 Basado en hooks elegidos en Fase 5:
 
 ```json
 {
-  "hooks": [
+  "hooks": {
     // Si eligió session-start:
-    {
-      "event": "SessionStart",
-      "type": "prompt",
-      "prompt": "Al iniciar sesión, haz un resumen rápido del vault. Verifica: 1) Notas en [INBOX_NAME] usando Glob, 2) Si existe daily note para hoy, 3) Si hay tasks pendientes. Formato: '🌅 Resumen: • 📥 X notas en inbox • 📅 Daily note: [existe/no] • ⚠️ X tasks pendientes'. Solo UNA vez por sesión."
-    },
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/session-start.sh"
+          }
+        ]
+      }
+    ],
     
     // Si eligió session-end:
-    {
-      "event": "Stop",
-      "type": "prompt", 
-      "prompt": "Antes de terminar la sesión: 1) Pregunta: '¿Quieres agregar notas antes de que guarde el contexto?', 2) Genera resumen de la sesión (qué se hizo, qué falta, próximo paso EXACTO), 3) Guarda en [CONTEXT_FOLDER]/sessions/YYYY-MM-DD.md usando template session.md, 4) Actualiza [CONTEXT_FOLDER]/LAST_SESSION.md. Usa formato markdown con frontmatter."
-    },
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/session-end.sh"
+          }
+        ]
+      }
+    ],
+    
+    // OPCIONAL: Si eligió smart-save (ADHD feature):
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Analyze the user's last message. If it contains farewell words like 'adiós', 'hasta luego', 'me voy', 'bye', 'goodbye', etc., generate a session summary with this format:\n\n## Session Summary\n\n**Date:** [date]\n**Worked on:** [project/task]\n\n### ✅ Accomplishments\n- [list achievements]\n\n### 🎯 Next Step\n[Exact description of next step]\n\n### 🧠 Important Context\n[Context to remember for next session]\n\nSave this summary to [CONTEXT_FOLDER]/sessions/[date].md AND update [CONTEXT_FOLDER]/LAST_SESSION.md.\n\nIf NO farewell detected, do nothing (continue normally)."
+          }
+        ]
+      }
+    ],
     
     // Si eligió frontmatter-helper:
-    {
-      "event": "PostToolUse",
-      "type": "prompt",
-      "matcher": "Write",
-      "prompt": "Si se creó archivo .md SIN frontmatter válido, sugerir brevemente: '💡 Sugerencia: [mostrar frontmatter según vault-config.yml]. ¿Agregar? (s/n)'. Si ya tiene frontmatter, no hacer nada."
-    },
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "If a .md file was created WITHOUT valid frontmatter, suggest briefly: '💡 Suggestion: [show frontmatter based on vault-config.yml]. Add it? (y/n)'. If it already has frontmatter, do nothing."
+          }
+        ]
+      }
+    ],
     
-    // Si eligió link-suggester:
-    {
-      "event": "PostToolUse",
-      "type": "prompt",
-      "matcher": "Write",
-      "prompt": "Si se creó nota NUEVA en KNOWLEDGE/ o PROJECTS/, extraer 2-3 términos clave y usar Grep para buscar notas relacionadas (máx 3 búsquedas). Si hay matches: '🔗 Posibles conexiones: [[nota1]], [[nota2]]'. Máximo 2 líneas."
-    }
-  ]
+    // Si eligió link-suggester (agregar a PostToolUse existente):
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "If a NEW note was created in KNOWLEDGE/ or PROJECTS/, extract 2-3 key terms and use Grep to find related notes (max 3 searches). If matches found: '🔗 Possible connections: [[note1]], [[note2]]'. Maximum 2 lines."
+          }
+        ]
+      }
+    ]
+  }
 }
 ```
 
 Usar Write para crear `.claude/hooks/hooks.json`
 
-**Importante:** Reemplazar `[INBOX_NAME]`, `[CONTEXT_FOLDER]`, etc. con los nombres reales de las carpetas.
+**CRÍTICO:** 
+- Reemplazar `[CONTEXT_FOLDER]` en el prompt de Stop con el nombre real de la carpeta
+- SessionStart y SessionEnd DEBEN usar `type: "command"` con scripts bash
+- Stop puede usar `type: "prompt"` para detección inteligente
 
 ### PASO 6.4: Crear Estructura de Carpetas
 
@@ -1285,6 +1357,77 @@ mkdir -p $AGENT_MEMORIES_FOLDER/category/
 
 Consider using `$PRODUCTIVITY_FOLDER/` or [context folder si existe] for session notes and persistent context.""",
     
+    # Hooks
+    "HOOKS_SECTION": [Si tiene session hooks activos:]
+"""### 📥 SessionStart Hook (ENABLED)
+
+**How it works:**
+1. When you open Claude Code, a bash script runs automatically
+2. It reads `{{context_folder}}/LAST_SESSION.md`  
+3. The content is injected SILENTLY into Claude's context
+4. **When you send your first message**, Claude already has this context loaded
+
+**Example flow:**
+```
+You: "hello"
+
+Claude: "🌅 Hello! I see from the last session you were working on AppSalud.
+         You had created the database models. The next step was to add
+         email validation to the User model. Should we continue?"
+```
+
+**Important:**
+- Claude does NOT respond automatically when you open
+- Context is loaded SILENTLY in the background
+- Your first message triggers the response with context
+
+### 💾 SessionEnd Hook (ENABLED)
+
+**How it works:**
+1. When you close Claude Code (/exit, Ctrl+C), a bash script runs automatically
+2. It saves a timestamp to `{{context_folder}}/sessions/YYYY-MM-DD.md`
+3. It updates `{{context_folder}}/LAST_SESSION.md` for next session
+
+**For best results:**
+BEFORE closing, ask Claude:
+```
+"Summarize what we worked on today and what the exact next step is"
+```
+
+Claude will generate a complete summary that gets saved automatically.
+
+[Si tiene Stop hook:]
+### ⚡ Smart Save Hook (ENABLED) ⭐
+
+**How it works:**
+When you say farewell words like "adiós", "goodbye", "bye", "me voy", etc.:
+1. Claude automatically detects you're about to close
+2. Generates a session summary automatically
+3. Saves it to `{{context_folder}}/sessions/` and `LAST_SESSION.md`
+4. Confirms: "✅ Summary saved!"
+
+**Simply say "goodbye" and Claude does everything.**
+
+### 💡 Recommended Flow
+
+1. **When starting:** Say "hello" or any message
+   → Claude shows you where you left off
+
+2. **While working:** Use commands normally
+   → Example: `/new-project`, `/process-inbox`
+
+3. **When finishing:** Say "goodbye" or "me voy"
+   → Claude generates and saves summary automatically
+
+4. **Next session:** Say "hello"
+   → Claude shows exactly where you left off"""
+[Sino:]
+"""No session hooks configured for this vault.
+
+To enable session context preservation:
+- Re-run `/setup-vault` and choose session hooks
+- Or manually configure hooks in `.claude/hooks/hooks.json`""",
+    
     # Main Workflows
     "MAIN_WORKFLOWS": """### Process Inbox
 
@@ -1406,6 +1549,7 @@ $RENDERED = str_replace($RENDERED, "{{WORKFLOWS_SECTION}}", vault_data["WORKFLOW
 $RENDERED = str_replace($RENDERED, "{{FRONTMATTER_SCHEMA}}", vault_data["FRONTMATTER_SCHEMA"])
 $RENDERED = str_replace($RENDERED, "{{FRONTMATTER_RULES}}", vault_data["FRONTMATTER_RULES"])
 $RENDERED = str_replace($RENDERED, "{{AGENT_MEMORY_SECTION}}", vault_data["AGENT_MEMORY_SECTION"])
+$RENDERED = str_replace($RENDERED, "{{HOOKS_SECTION}}", vault_data["HOOKS_SECTION"])
 $RENDERED = str_replace($RENDERED, "{{MAIN_WORKFLOWS}}", vault_data["MAIN_WORKFLOWS"])
 $RENDERED = str_replace($RENDERED, "{{CONTENT_MAPPINGS}}", vault_data["CONTENT_MAPPINGS"])
 
