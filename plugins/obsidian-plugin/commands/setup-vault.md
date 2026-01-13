@@ -9,11 +9,15 @@ allowed-tools:
   - Bash
   - Grep
   - Glob
+env-variables:
+  CLAUDE_PLUGIN_ROOT: "Path to plugin installation directory"
 ---
 
 # Comando: /setup-vault
 
 Wizard interactivo que configura tu Obsidian vault desde cero, adaptándose a tu forma de trabajar.
+
+**IMPORTANTE:** Este comando usa la variable de entorno `$CLAUDE_PLUGIN_ROOT` que apunta al directorio del plugin instalado. Claude Code la proporciona automáticamente.
 
 ## Argumentos
 
@@ -905,10 +909,10 @@ mkdir -p .claude/hooks
 
 2. **Copiar template session-start.sh:**
 ```bash
-# Leer template
-Read([plugin-dir]/templates/hooks/session-start.sh)
+# Leer template usando CLAUDE_PLUGIN_ROOT
+Read("$CLAUDE_PLUGIN_ROOT/templates/hooks/session-start.sh")
 
-# Reemplazar {{CONTEXT_FOLDER}} con el nombre real
+# Reemplazar {{CONTEXT_FOLDER}} con el nombre real de la carpeta de contexto
 # Guardar en .claude/hooks/session-start.sh
 Write(".claude/hooks/session-start.sh", $SESSION_START_CONTENT)
 
@@ -918,10 +922,10 @@ Execute("chmod +x .claude/hooks/session-start.sh")
 
 3. **Copiar template session-end.sh:**
 ```bash
-# Leer template
-Read([plugin-dir]/templates/hooks/session-end.sh)
+# Leer template usando CLAUDE_PLUGIN_ROOT
+Read("$CLAUDE_PLUGIN_ROOT/templates/hooks/session-end.sh")
 
-# Reemplazar {{CONTEXT_FOLDER}} con el nombre real
+# Reemplazar {{CONTEXT_FOLDER}} con el nombre real de la carpeta de contexto
 # Guardar en .claude/hooks/session-end.sh
 Write(".claude/hooks/session-end.sh", $SESSION_END_CONTENT)
 
@@ -1040,19 +1044,19 @@ mkdir -p "_SYSTEM/templates"
 Determinar qué templates copiar según la config base:
 
 ```bash
-# Templates base siempre:
-cp FranEscob/plugins/obsidian-plugin/templates/[config_base]/daily-note.md _SYSTEM/templates/
-cp FranEscob/plugins/obsidian-plugin/templates/[config_base]/quick-note.md _SYSTEM/templates/
+# Templates base siempre (usar CLAUDE_PLUGIN_ROOT):
+cp "$CLAUDE_PLUGIN_ROOT/templates/[config_base]/daily-note.md" _SYSTEM/templates/
+cp "$CLAUDE_PLUGIN_ROOT/templates/[config_base]/quick-note.md" _SYSTEM/templates/
 
 # Si config es creative-adhd:
-cp FranEscob/plugins/obsidian-plugin/templates/creative-adhd/*.md _SYSTEM/templates/
+cp "$CLAUDE_PLUGIN_ROOT/templates/creative-adhd/"*.md _SYSTEM/templates/
 
 # Si config es francovault:
-cp FranEscob/plugins/obsidian-plugin/templates/francovault/*.md _SYSTEM/templates/
+cp "$CLAUDE_PLUGIN_ROOT/templates/francovault/"*.md _SYSTEM/templates/
 
 # Si config es researcher:
-cp FranEscob/plugins/obsidian-plugin/templates/francovault/note-estudio.md _SYSTEM/templates/
-cp FranEscob/plugins/obsidian-plugin/templates/francovault/note-recurso.md _SYSTEM/templates/
+cp "$CLAUDE_PLUGIN_ROOT/templates/francovault/note-estudio.md" _SYSTEM/templates/
+cp "$CLAUDE_PLUGIN_ROOT/templates/francovault/note-recurso.md" _SYSTEM/templates/
 ```
 
 **Nota:** Adaptar paths en templates si se cambiaron nombres de carpetas.
@@ -1267,7 +1271,8 @@ Próxima sesión:
 
 1. **Leer template base:**
 ```bash
-Read([plugin-dir]/templates/agent-instructions/CLAUDE.md.template)
+# Usar CLAUDE_PLUGIN_ROOT para acceder al template
+Read("$CLAUDE_PLUGIN_ROOT/templates/agent-instructions/CLAUDE.md.template")
 ```
 
 2. **Guardar contenido en variable** `$TEMPLATE`
