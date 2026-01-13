@@ -19,6 +19,28 @@ The **Obsidian Adaptive Plugin** is a revolutionary framework that transforms ho
 - Multiple personas (Technical, Creative, Researcher, ADHD-friendly)
 - Canvas-based visualizations (optional)
 
+### 🤖 AI Agent Instructions (CLAUDE.md/AGENTS.md) ⭐ NEW
+
+**Critical Feature:** The wizard automatically generates personalized agent instructions:
+
+- ✅ **CLAUDE.md** - Complete vault context for Claude Code
+- ✅ **AGENTS.md** - Same instructions for other AI agents (Cursor, Windsurf, Cline, etc.)
+
+**What's included:**
+- Your exact folder structure (with custom names)
+- Available commands and how to use them
+- Active workflows and automation levels
+- Frontmatter schema (simple vs detailed)
+- Search strategies optimized for your vault
+- Important rules and best practices
+
+**Why this matters:**
+- AI agents understand your vault structure immediately
+- Commands are used correctly from day 1
+- Automation preferences are respected
+- No need to re-explain your setup every session
+- Consistent behavior across all AI tools
+
 ---
 
 ## ✨ Features
@@ -29,6 +51,7 @@ The **Obsidian Adaptive Plugin** is a revolutionary framework that transforms ho
 - 5 key questions to understand your workflow
 - Intelligent config recommendation
 - Full customization: add/remove/rename folders
+- **Generates CLAUDE.md/AGENTS.md** with personalized AI instructions ⭐
 
 ### 🛠️ 7 Adaptive Commands
 All commands read `.claude/vault-config.yml` and adapt automatically:
@@ -411,12 +434,14 @@ MIT License - See [LICENSE](LICENSE) file for details
 ## 💡 Why This Plugin is Unique
 
 **No other PKM plugin does this:**
-1. ✅ Adapts commands to user preferences
-2. ✅ Modifies behavior based on configuration
-3. ✅ ADHD-specific workflows (auto-save context)
-4. ✅ Canvas-based dashboards (programmatic)
-5. ✅ Education-first wizard (explains PKM concepts)
-6. ✅ Multiple personas in one plugin
+1. ✅ **Generates AI agent instructions** (CLAUDE.md/AGENTS.md) automatically
+2. ✅ Adapts commands to user preferences
+3. ✅ Modifies behavior based on configuration
+4. ✅ ADHD-specific workflows (auto-save context)
+5. ✅ Canvas-based dashboards (programmatic)
+6. ✅ Education-first wizard (explains PKM concepts)
+7. ✅ Multiple personas in one plugin
+8. ✅ Works with any AI agent (Claude, Cursor, Windsurf, etc.)
 7. ✅ Dynamic frontmatter schemas
 8. ✅ Fully customizable folder structure
 
